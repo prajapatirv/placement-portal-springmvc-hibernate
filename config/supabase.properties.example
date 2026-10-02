@@ -1,0 +1,20 @@
+# Supabase connection settings, shared by IntelliJ, VS Code, start.cmd and start.sh.
+# 1. Copy this file to config/supabase.properties (that copy is git-ignored, so the password never reaches Git).
+# 2. Fill in supabase.password. Plain text: no quotes, and NO percent-encoding is needed here.
+#
+# Direct connection (default): host db.<project-ref>.supabase.co, user postgres. IPv6 only.
+# If your network is IPv4-only (many college / venue Wi-Fi networks) or you see "Unknown host" / "Network is
+# unreachable", switch to the Session pooler instead: Supabase > Connect > Session pooler, then use
+#   supabase.host=aws-0-<region>.pooler.supabase.com
+#   supabase.user=postgres.<project-ref>
+# and keep supabase.port=5432 (never the Transaction pooler on 6543).
+
+supabase.host=db.YOUR-PROJECT-REF.supabase.co
+supabase.port=5432
+supabase.database=postgres
+supabase.user=postgres
+supabase.password=YOUR-DB-PASSWORD
+supabase.sslmode=require
+
+# Reference only (not used by JDBC): project URL https://YOUR-PROJECT-REF.supabase.co
+# The publishable (anon) key is for Supabase's REST/JS API and is NOT needed for this Spring + JDBC app.

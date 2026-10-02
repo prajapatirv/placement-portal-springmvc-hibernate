@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Change status')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Change application status</h1>
+  <div class="card">
+    <b th:text="${row.student}">Student</b> &rarr; <span th:text="${row.job}">Job</span>
+    (<span th:text="${row.company}">Company</span>) &middot; row version <b th:text="${row.version}">0</b>
+  </div>
+  <form method="post" th:action="@{/applications/{id}/status(id=${row.id})}" th:object="${form}" class="card">
+    <input type="hidden" th:field="*{version}">
+    <div class="field"><label for="status">New status</label>
+      <select id="status" th:field="*{status}">
+        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">APPLIED</option>
+      </select>
+      <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Error</div></div>
+    <p class="muted">The hidden version detects a stale page: open this form in two tabs and save both, the second gets a 409.</p>
+    <button type="submit">Save</button>
+    <a class="btn secondary" th:href="@{/applications}">Cancel</a>
+  </form>
+</main>
+</body>
+</html>

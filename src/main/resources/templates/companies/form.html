@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Company')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1 th:text="${heading}">Company</h1>
+  <form method="post" th:action="@{${action}}" th:object="${form}" class="card">
+    <div class="err" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Conflict</div>
+    <div class="field"><label for="name">Name</label>
+      <input id="name" th:field="*{name}">
+      <div class="error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</div></div>
+    <div class="field"><label for="city">City</label>
+      <input id="city" th:field="*{city}">
+      <div class="error" th:if="${#fields.hasErrors('city')}" th:errors="*{city}">Error</div></div>
+    <div class="field"><label for="website">Website</label>
+      <input id="website" th:field="*{website}">
+      <div class="error" th:if="${#fields.hasErrors('website')}" th:errors="*{website}">Error</div></div>
+    <button type="submit">Save</button>
+    <a class="btn secondary" th:href="@{/companies}">Cancel</a>
+  </form>
+</main>
+</body>
+</html>

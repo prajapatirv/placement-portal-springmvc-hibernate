@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Open jobs')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Open job postings</h1>
+  <div th:replace="~{fragments/layout :: flash}"></div>
+  <form class="toolbar" method="get" th:action="@{/jobs}">
+    <input name="city" th:value="${city}" placeholder="City, for example Surat">
+    <button type="submit">Filter</button>
+    <a class="btn secondary" th:href="@{/jobs}" th:if="${city != null and !city.isBlank()}">Clear</a>
+  </form>
+  <table>
+    <tr><th>Title</th><th>Company</th><th>City</th><th>Package</th><th>Last date</th></tr>
+    <tr th:each="j : ${jobs}">
+      <td><a th:href="@{/jobs/{id}(id=${j.id})}" th:text="${j.title}">Title</a></td>
+      <td th:text="${j.company}">Company</td>
+      <td th:text="${j.city}">City</td>
+      <td th:text="|${j.minLpa} to ${j.maxLpa} LPA|">Package</td>
+      <td th:text="${j.lastDate}">Last date</td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(jobs)}"><td colspan="5" class="muted">No open jobs found.</td></tr>
+  </table>
+</main>
+</body>
+</html>

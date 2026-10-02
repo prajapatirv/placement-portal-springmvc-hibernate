@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <img class="hero" th:src="@{/img/ppsu-banner.jpg}" alt="P P Savani University, NAAC accredited A+ grade">
+  <h1>Campus Placement Portal</h1>
+  <p>Spring MVC + Hibernate (Spring Data JPA) + Flyway on Supabase PostgreSQL.</p>
+  <div class="grid">
+    <div class="stat"><b th:text="${counts.companies}">5</b>Companies</div>
+    <div class="stat"><b th:text="${counts.jobs}">12</b>Job postings</div>
+    <div class="stat"><b th:text="${counts.students}">8</b>Students</div>
+    <div class="stat"><b th:text="${counts.applications}">20</b>Applications</div>
+  </div>
+  <div class="card" style="margin-top:20px">
+    <h3>Try it</h3>
+    <ul>
+      <li><a th:href="@{/jobs}">Open jobs</a> and <a th:href="@{/jobs(city='Surat')}">filter by city</a></li>
+      <li><a th:href="@{/applications(slow=true)}">Applications: slow (N+1)</a> vs <a th:href="@{/applications}">fast (JOIN FETCH)</a></li>
+      <li><a th:href="@{/api/jobs}">JSON endpoint</a> | <a th:href="@{/actuator/health}">health</a></li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>

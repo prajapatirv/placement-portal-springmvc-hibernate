@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage jobs')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Manage job postings</h1>
+  <div th:replace="~{fragments/layout :: flash}"></div>
+  <div class="toolbar"><a class="btn" th:href="@{/jobs/new}">+ Add job posting</a></div>
+  <table>
+    <tr><th>Title</th><th>Company</th><th>Package</th><th>Last date</th><th>Status</th><th></th></tr>
+    <tr th:each="j : ${page.content}">
+      <td><a th:href="@{/jobs/{id}(id=${j.id})}" th:text="${j.title}">Title</a></td>
+      <td th:text="${j.company}">Company</td>
+      <td th:text="|${j.minLpa} to ${j.maxLpa}|">Package</td>
+      <td th:text="${j.lastDate}">Date</td>
+      <td><span class="badge" th:classappend="${j.status}" th:text="${j.status}">OPEN</span></td>
+      <td class="actions">
+        <a class="btn secondary" th:href="@{/jobs/{id}/edit(id=${j.id})}">Edit</a>
+        <form class="inline" method="post" th:action="@{/jobs/{id}/delete(id=${j.id})}"
+              onsubmit="return confirm('Delete this posting?')">
+          <button class="danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+  </table>
+  <div class="pager">
+    <a class="btn secondary" th:if="${page.hasPrevious()}" th:href="@{/jobs/manage(page=${page.number - 1})}">Previous</a>
+    <span class="muted" th:text="|Page ${page.number + 1} of ${page.totalPages} (${page.totalElements} postings)|">Page 1</span>
+    <a class="btn secondary" th:if="${page.hasNext()}" th:href="@{/jobs/manage(page=${page.number + 1})}">Next</a>
+  </div>
+</main>
+</body>
+</html>

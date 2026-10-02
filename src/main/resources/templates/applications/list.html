@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Applications')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Applications</h1>
+  <div th:replace="~{fragments/layout :: flash}"></div>
+  <div class="toolbar">
+    <span th:if="${slow}">Mode: <b>SLOW</b> (lazy loading, 26 SQL statements) &middot; <a th:href="@{/applications}">switch to fast</a></span>
+    <span th:unless="${slow}">Mode: <b>FAST</b> (JOIN FETCH, 1 SQL statement) &middot; <a th:href="@{/applications(slow=true)}">switch to slow</a></span>
+  </div>
+  <form method="post" th:action="@{/applications/bulk-shortlist}">
+    <table>
+      <tr><th></th><th>Student</th><th>Job</th><th>Company</th><th>Status</th><th>Applied</th><th></th></tr>
+      <tr th:each="r : ${rows}">
+        <td><input type="checkbox" name="ids" th:value="${r.id}"></td>
+        <td th:text="${r.student}">Student</td>
+        <td th:text="${r.job}">Job</td>
+        <td th:text="${r.company}">Company</td>
+        <td><span class="badge" th:classappend="${r.status}" th:text="${r.status}">APPLIED</span></td>
+        <td th:text="${#temporals.format(r.appliedAt, 'dd MMM yyyy HH:mm')}">Date</td>
+        <td class="actions">
+          <button class="warn" type="submit" th:formaction="@{/applications/{id}/shortlist(id=${r.id})}">Shortlist</button>
+          <a class="btn secondary" th:href="@{/applications/{id}/status(id=${r.id})}">Change status</a>
+          <button class="danger" type="submit" th:formaction="@{/applications/{id}/delete(id=${r.id})}"
+                  onclick="return confirm('Withdraw this application?')">Withdraw</button>
+        </td>
+      </tr>
+    </table>
+    <div class="toolbar" style="margin-top:12px">
+      <button type="submit">Shortlist selected</button>
+      <span class="muted">All-or-nothing: one failing id rolls back the whole batch.</span>
+    </div>
+  </form>
+</main>
+</body>
+</html>

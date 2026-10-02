@@ -1,0 +1,31 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "PlacementPortal (Supabase, reads config/supabase.properties)",
+      "request": "launch",
+      "mainClass": "com.ppsu.placement.PlacementPortalApplication",
+      "projectName": "placement-portal",
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "java",
+      "name": "PlacementPortal (local H2, no account)",
+      "request": "launch",
+      "mainClass": "com.ppsu.placement.PlacementPortalApplication",
+      "projectName": "placement-portal",
+      "cwd": "${workspaceFolder}",
+      "args": "--spring.profiles.active=local"
+    },
+    {
+      "type": "java",
+      "name": "PlacementPortal (Supabase + N+1 demo)",
+      "request": "launch",
+      "mainClass": "com.ppsu.placement.PlacementPortalApplication",
+      "projectName": "placement-portal",
+      "cwd": "${workspaceFolder}",
+      "args": "--demo.n-plus-one=true"
+    }
+  ]
+}

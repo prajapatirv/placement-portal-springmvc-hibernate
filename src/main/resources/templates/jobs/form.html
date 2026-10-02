@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Job posting')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1 th:text="${heading}">Job posting</h1>
+  <form method="post" th:action="@{${action}}" th:object="${form}" class="card">
+    <div class="err" th:if="${#fields.hasGlobalErrors()}" th:each="e : ${#fields.globalErrors()}" th:text="${e}">Conflict</div>
+    <div class="field"><label for="companyId">Company</label>
+      <select id="companyId" th:field="*{companyId}">
+        <option value="">-- choose --</option>
+        <option th:each="c : ${companies}" th:value="${c.id}" th:text="${c.name}">Company</option>
+      </select>
+      <div class="error" th:if="${#fields.hasErrors('companyId')}" th:errors="*{companyId}">Error</div></div>
+    <div class="field"><label for="title">Title</label>
+      <input id="title" th:field="*{title}">
+      <div class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Error</div></div>
+    <div class="field"><label for="minPackageLpa">Minimum package (LPA)</label>
+      <input id="minPackageLpa" type="number" step="0.01" th:field="*{minPackageLpa}">
+      <div class="error" th:if="${#fields.hasErrors('minPackageLpa')}" th:errors="*{minPackageLpa}">Error</div></div>
+    <div class="field"><label for="maxPackageLpa">Maximum package (LPA)</label>
+      <input id="maxPackageLpa" type="number" step="0.01" th:field="*{maxPackageLpa}">
+      <div class="error" th:if="${#fields.hasErrors('maxPackageLpa')}" th:errors="*{maxPackageLpa}">Error</div></div>
+    <div class="field"><label for="lastDate">Last date</label>
+      <input id="lastDate" type="date" th:field="*{lastDate}">
+      <div class="error" th:if="${#fields.hasErrors('lastDate')}" th:errors="*{lastDate}">Error</div></div>
+    <div class="field"><label for="status">Status</label>
+      <select id="status" th:field="*{status}">
+        <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}">OPEN</option>
+      </select>
+      <div class="error" th:if="${#fields.hasErrors('status')}" th:errors="*{status}">Error</div></div>
+    <button type="submit">Save</button>
+    <a class="btn secondary" th:href="@{/jobs/manage}">Cancel</a>
+  </form>
+</main>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Companies')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Companies</h1>
+  <div th:replace="~{fragments/layout :: flash}"></div>
+  <div class="toolbar"><a class="btn" th:href="@{/companies/new}">+ Add company</a></div>
+  <table>
+    <tr><th>Name</th><th>City</th><th>Website</th><th>Postings</th><th></th></tr>
+    <tr th:each="c : ${companies}">
+      <td th:text="${c.name}">Name</td>
+      <td th:text="${c.city}">City</td>
+      <td th:text="${c.website}">Website</td>
+      <td th:text="${c.jobCount}">0</td>
+      <td class="actions">
+        <a class="btn secondary" th:href="@{/companies/{id}/edit(id=${c.id})}">Edit</a>
+        <form class="inline" method="post" th:action="@{/companies/{id}/delete(id=${c.id})}"
+              onsubmit="return confirm('Delete this company?')">
+          <button class="danger" type="submit">Delete</button>
+        </form>
+      </td>
+    </tr>
+  </table>
+</main>
+</body>
+</html>

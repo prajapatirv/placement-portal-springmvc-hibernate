@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title th:text="${title} + ' | Placement Portal'">Placement Portal</title>
+  <link rel="icon" type="image/png" th:href="@{/img/favicon.png}">
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<nav th:fragment="nav">
+  <a class="brand" th:href="@{/}">
+    <img class="logo" th:src="@{/img/ppsu-logo.png}" alt="P P Savani University">
+    <span>Campus Placement Portal</span>
+  </a>
+  <a th:href="@{/}">Home</a>
+  <a th:href="@{/jobs}">Open jobs</a>
+  <a th:href="@{/jobs/manage}">Manage jobs</a>
+  <a th:href="@{/companies}">Companies</a>
+  <a th:href="@{/students}">Students</a>
+  <a th:href="@{/applications}">Applications</a>
+</nav>
+<div th:fragment="flash">
+  <div class="msg" th:if="${message}" th:text="${message}">Saved</div>
+  <div class="err" th:if="${error}" th:text="${error}">Something went wrong</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Job')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <div th:replace="~{fragments/layout :: flash}"></div>
+  <div class="card">
+    <h1 th:text="${job.title}">Title</h1>
+    <p><b th:text="${job.company}">Company</b> &middot; <span th:text="${job.city}">City</span></p>
+    <p>Package: <b th:text="|${job.minLpa} to ${job.maxLpa} LPA|">3 to 4 LPA</b></p>
+    <p>Last date: <span th:text="${job.lastDate}">2026-12-01</span>
+       <span class="badge" th:classappend="${job.status}" th:text="${job.status}">OPEN</span></p>
+    <a class="btn" th:if="${job.status.name() == 'OPEN'}" th:href="@{/jobs/{id}/apply(id=${job.id})}">Apply</a>
+    <a class="btn secondary" th:href="@{/jobs/{id}/edit(id=${job.id})}">Edit</a>
+    <a class="btn secondary" th:href="@{/jobs}">Back to jobs</a>
+  </div>
+</main>
+</body>
+</html>

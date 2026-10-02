@@ -1,0 +1,14 @@
+target/
+.idea/
+*.iml
+.vscode/*
+!.vscode/launch.json
+!.vscode/settings.json
+.env
+config/supabase.properties
+logs/
+.app.pid
+*.log
+.claude/
+HELP.md
+.mvn/wrapper/maven-wrapper.jar

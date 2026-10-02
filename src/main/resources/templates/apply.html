@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Apply')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Apply</h1>
+  <div class="card">
+    <b th:text="${job.title}">Title</b> at <span th:text="${job.company}">Company</span>
+  </div>
+  <form method="post" th:action="@{/jobs/{id}/apply(id=${job.id})}" th:object="${form}" class="card">
+    <div class="field"><label for="email">Student email</label>
+      <input id="email" th:field="*{email}" placeholder="asha@ppsu.example">
+      <div class="error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Error</div></div>
+    <button type="submit">Submit application</button>
+    <a class="btn secondary" th:href="@{/jobs/{id}(id=${job.id})}">Cancel</a>
+  </form>
+</main>
+</body>
+</html>
