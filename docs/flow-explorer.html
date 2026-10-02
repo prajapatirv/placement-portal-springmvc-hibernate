@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Placement Portal Flow Explorer</title>
+<style>
+  :root { --bg:#f6f8fb; --card:#fff; --ink:#1b2430; --mute:#5b6778; --line:#cfd8e3; --accent:#1f5fbf; --hot:#e8590c; --ok:#2b8a3e; --code:#0f1722; --codeink:#c9f1d0; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f1722; --card:#17212f; --ink:#e6edf5; --mute:#9aa8ba; --line:#2c3a4d; --accent:#6ea8ff; --hot:#ff922b; --ok:#69db7c; --code:#0a0f17; } }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.45 system-ui,Segoe UI,Roboto,sans-serif; }
+  header { padding:16px 20px 0; }
+  h1 { margin:0; font-size:22px; }
+  header p { margin:4px 0 0; color:var(--mute); font-size:14px; }
+  nav { display:flex; flex-wrap:wrap; gap:8px; padding:14px 20px; }
+  nav button, .ctl button { border:1px solid var(--line); background:var(--card); color:var(--ink); padding:8px 14px; border-radius:8px; font:inherit; cursor:pointer; }
+  nav button.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+  main { padding:0 20px 24px; max-width:1200px; margin:0 auto; }
+  .lanes { display:grid; grid-template-columns:repeat(7,1fr); gap:10px; margin-top:6px; }
+  .node { background:var(--card); border:2px solid var(--line); border-radius:10px; padding:12px 6px; text-align:center; min-height:84px; display:flex; flex-direction:column; justify-content:center; transition:all .25s; }
+  .node b { font-size:14px; } .node small { color:var(--mute); font-size:11px; }
+  .node.seen { border-color:var(--accent); }
+  .node.hot { border-color:var(--hot); background:color-mix(in srgb,var(--hot) 14%,var(--card)); transform:translateY(-4px); box-shadow:0 6px 16px rgba(0,0,0,.18); }
+  .msg { margin:18px 0 10px; background:var(--card); border:1px solid var(--line); border-left:6px solid var(--hot); border-radius:10px; padding:14px 18px; }
+  .msg .t { font-size:13px; color:var(--mute); } .msg .h { font-size:20px; font-weight:650; margin:2px 0 4px; }
+  .say { color:var(--mute); font-style:italic; margin-top:6px; }
+  pre { margin:0 0 12px; background:var(--code); color:var(--codeink); padding:12px 16px; border-radius:10px; overflow:auto; min-height:64px; font:13px/1.5 Consolas,Menlo,monospace; white-space:pre-wrap; }
+  .ctl { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+  .ctl .dots { flex:1; display:flex; gap:5px; min-width:120px; }
+  .dots i { flex:1; height:6px; border-radius:3px; background:var(--line); } .dots i.on { background:var(--hot); } .dots i.done { background:var(--accent); }
+  .hint { color:var(--mute); font-size:13px; margin-top:10px; }
+  @media (max-width:760px) { .lanes { grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Placement Portal: Flow Explorer</h1>
+  <p>Console lines are illustrative of the real log. Pick a flow, then press Next (or the right arrow key). The orange box is where the request is right now; the black panel is what the console prints at that moment.</p>
+</header>
+<nav id="tabs"></nav>
+<main>
+  <div class="lanes" id="lanes"></div>
+  <div class="msg"><div class="t" id="count"></div><div class="h" id="head"></div><div id="body"></div><div class="say" id="say"></div></div>
+  <pre id="log"></pre>
+  <div class="ctl">
+    <button id="prev">&larr; Back</button><button id="next">Next &rarr;</button><button id="play">Auto play</button><button id="reset">Restart</button>
+    <div class="dots" id="dots"></div>
+  </div>
+  <div class="hint">Tip: before pressing Next, ask the audience "which layer is next?" Keys: &larr; &rarr; space.</div>
+</main>
+<script>
+const NODES = [
+  ["Browser","user / curl"], ["DispatcherServlet","front controller"], ["Controller","@Controller"],
+  ["Service","@Transactional proxy"], ["Repository","Spring Data JPA"], ["Hibernate","ORM + Session"], ["PostgreSQL","Supabase, schema app"]
+];
+// step: [nodeIndex, heading, explanation, consoleLines, speakerLine]
+const FLOWS = {
+ "0 Startup": [
+  [6,"Connect and migrate","Flyway opens a JDBC connection (Session pooler, sslmode=require) and applies V1 schema, V2 seed, V3 index.","Migrating schema \"app\" to version \"1 - init\"\nMigrating schema \"app\" to version \"2 - seed data\"\nMigrating schema \"app\" to version \"3 - perf index\"","The database is code, versioned in Git."],
+  [5,"Hibernate validates","ddl-auto=validate: every entity column must exist in the tables Flyway just built.","HHH000412: Hibernate ORM core version 6.x\nSchema-validation: passed","Rename a column in an entity and the app refuses to start."],
+  [4,"Repositories become beans","Spring builds an implementation for each repository interface from method names and @Query.","Bootstrapping Spring Data JPA repositories ... Found 4 repository interfaces","existsByStudentIdAndJobId has no code behind it."],
+  [3,"Services get proxies","@Transactional services are wrapped in a proxy that begins and commits transactions.","(no output) proxy created around ApplicationService","Same trick as Demo 2."],
+  [1,"DispatcherServlet ready","Controller methods are registered as handlers: GET /jobs, POST /jobs/{id}/apply ...","Tomcat started on port 8080\nStarted PlacementPortalApplication in 6.4 seconds","Open / : counts 5, 12, 8, 20."]
+ ],
+ "1 Read: GET /jobs": [
+  [0,"Browser sends a request","The user opens /jobs?city=Surat.","GET /jobs?city=Surat HTTP/1.1","The browser knows nothing about controllers."],
+  [1,"DispatcherServlet receives it","One front controller for the whole app. It asks HandlerMapping who handles this URL and method.","DispatcherServlet: GET /jobs  ->  JobController.list","The browser never talks to your controller."],
+  [2,"Controller binds input","@RequestParam city is bound from the query string. No business logic here.","city = \"Surat\"","A controller translates HTTP into method calls."],
+  [3,"Service opens a transaction","The proxy begins a read-only transaction and calls listOpenJobs(city).","begin transaction (readOnly = true)","Business rules live here, never in the controller."],
+  [4,"Repository query","findOpenByCity uses JOIN FETCH so the company arrives with the job.","(derived from @Query)","This is the student challenge."],
+  [5,"Hibernate generates SQL","JPQL becomes PostgreSQL SQL.","select j.*, c.* from job_posting j join company c on c.id=j.company_id\n where j.status='OPEN' and lower(c.city)=? order by j.last_date","One statement. Count it."],
+  [6,"Database returns rows","3 rows for Surat (Gujarat Cloudworks).","3 rows","The only moment we touch the database."],
+  [3,"Mapped to DTOs","Entities are copied into JobView records inside the transaction; then the transaction ends.","commit; entities detached","Entities never reach the template."],
+  [2,"Controller picks a view","Puts the list in the Model and returns the view name.","return \"jobs/list\"","Same service also feeds /api/jobs as JSON."],
+  [0,"Thymeleaf renders HTML","th:each loops the DTOs; HTML goes back to the browser.","HTTP 200 text/html","Total: 1 SQL statement."]
+ ],
+ "2 Write: apply (POST)": [
+  [0,"Student submits the form","POST /jobs/4/apply with email=yash@ppsu.example.","POST /jobs/4/apply  email=yash@ppsu.example","A form post, not a link."],
+  [1,"Routed to ApplicationController","DispatcherServlet maps POST /jobs/{id}/apply.","DispatcherServlet: POST /jobs/{id}/apply -> ApplicationController.apply","Same front controller as every request."],
+  [2,"Bean Validation","@Valid ApplyForm checks @NotBlank and @Email. Errors go to BindingResult and the form is shown again (HTTP 200).","email OK (empty email would show: Email is required)","Validate at the edge, before any service call."],
+  [3,"Guard 1 to 3","Inside @Transactional apply(): job exists? open and not past last date? student exists?","NotFoundException -> 404 | JobClosedException -> 409","Friendly message first."],
+  [4,"Guard 4: duplicate?","existsByStudentIdAndJobId(student, job).","select count(*) from application where student_id=? and job_id=?","DuplicateApplicationException -> 409."],
+  [5,"Hibernate persists","save() schedules an INSERT; it runs at flush/commit.","insert into application (student_id, job_id, status, applied_at, version) values (?,?,?,?,?)","uq_application is the final guard if two requests race."],
+  [6,"Database commits","Row stored, version = 0.","COMMIT","Check Supabase Table Editor."],
+  [2,"Post-Redirect-Get","Controller adds a flash message and returns redirect:/applications.","HTTP 302 Location: /applications","F5 now repeats a GET, not the POST."],
+  [0,"Browser follows the redirect","GET /applications shows the list with 'Application submitted'.","GET /applications -> 200","Done."]
+ ],
+ "3 N+1 problem": [
+  [0,"Open /applications?slow=true","listSlow() loads applications through lazy proxies.","GET /applications?slow=true","Poll the audience: how many statements?"],
+  [4,"1 query for applications","select * from application returns 20 rows. Each row holds a lazy proxy for student and job.","select ... from application      (1)","Cheap so far."],
+  [5,"Template touches student.name","Every proxy is initialized on first access: one query per distinct student.","select ... from student where id=?   x 8   (9)","Lazy is the right default."],
+  [5,"Touches job.title","One query per distinct job.","select ... from job_posting where id=?   x 12   (21)","The loop is the bug."],
+  [5,"Touches company.name","One query per distinct company.","select ... from company where id=?   x 5   (26)","26 statements for one page."],
+  [4,"Fix 1: JOIN FETCH","listFast(): ask for everything in one query.","select a.*, s.*, j.*, c.* from application a join student s join job_posting j join company c   (1)","26 -> 1 for this page."],
+  [5,"Fix 2: batch size","profile batch: default_batch_fetch_size=20 loads proxies in groups, no code change.","1 list + 1 students + 1 jobs + 1 companies   (4)","Pick the lightest fix that works. Always measure."]
+ ]
+};
+let flow = Object.keys(FLOWS)[0], i = 0, timer = null;
+const $ = id => document.getElementById(id);
+function render() {
+  const steps = FLOWS[flow], s = steps[i];
+  const seen = new Set(steps.slice(0, i).map(x => x[0]));
+  $("lanes").innerHTML = NODES.map((n, k) => `<div class="node ${k===s[0]?'hot':seen.has(k)?'seen':''}"><b>${n[0]}</b><small>${n[1]}</small></div>`).join("");
+  $("count").textContent = `${flow} · step ${i+1} of ${steps.length}`;
+  $("head").textContent = s[1]; $("body").textContent = s[2]; $("say").textContent = "Say: " + s[4];
+  $("log").textContent = steps.slice(0, i+1).map((x, k) => (k===i ? "> " : "  ") + x[3].split("\n").join("\n  ")).join("\n");
+  $("dots").innerHTML = steps.map((_, k) => `<i class="${k===i?'on':k<i?'done':''}"></i>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.f === flow));
+}
+function go(d) { const n = FLOWS[flow].length; i = Math.max(0, Math.min(n-1, i+d)); render(); }
+function stop() { clearInterval(timer); timer = null; $("play").textContent = "Auto play"; }
+$("tabs").innerHTML = Object.keys(FLOWS).map(f => `<button data-f="${f}">${f}</button>`).join("");
+$("tabs").onclick = e => { if (e.target.dataset.f) { stop(); flow = e.target.dataset.f; i = 0; render(); } };
+$("next").onclick = () => go(1); $("prev").onclick = () => go(-1); $("reset").onclick = () => { stop(); i = 0; render(); };
+$("play").onclick = () => { if (timer) return stop(); $("play").textContent = "Pause"; timer = setInterval(() => { if (i >= FLOWS[flow].length-1) return stop(); go(1); }, 2500); };
+document.onkeydown = e => { if (e.key==="ArrowRight"||e.key===" ") { e.preventDefault(); go(1); } if (e.key==="ArrowLeft") go(-1); };
+render();
+</script>
+</body>
+</html>

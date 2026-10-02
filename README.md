@@ -42,7 +42,7 @@ flowchart LR
 | `01_create_schema.sql` | **once, required** | `create schema if not exists app;` then start the app: Flyway creates tables and seed data |
 | `02_verify.sql` | after the first start | row counts 5/12/8/20, Flyway history, sample join |
 | `03_reset.sql` | before a rehearsal | drops and recreates schema `app` (destructive, only that schema) |
-| `04_manual_full_schema_and_seed.sql` | optional | the whole database by hand; then just start the app (Flyway baselines at version 3) |
+| `04_manual_full_schema_and_seed.sql` | optional | the whole database by hand; then start the app with Flyway off (`--spring.flyway.enabled=false`, see the script header); run `03_reset.sql` to return to the normal Flyway way |
 
 ## What you can do
 
@@ -71,7 +71,29 @@ SQL logging and statistics are on. Run with `--demo.n-plus-one=true` and compare
 
 `./mvnw verify` runs 38 tests on H2 (no secrets, no Supabase). See [docs/04-test-cases-and-key-features.md](docs/04-test-cases-and-key-features.md).
 
-## Documentation (tasks 1 to 7)
+## How a request flows (one picture)
+
+```mermaid
+sequenceDiagram
+    actor U as Browser
+    participant DS as DispatcherServlet
+    participant C as Controller
+    participant S as Service (@Transactional)
+    participant R as Repository
+    participant DB as PostgreSQL
+    U->>DS: GET /jobs?city=Surat
+    DS->>C: JobController.list
+    C->>S: listOpenJobs("Surat")
+    S->>R: findOpenByCity
+    R->>DB: select ... join fetch (1 statement)
+    DB-->>S: rows, mapped to JobView DTOs
+    S-->>C: DTO list
+    C-->>U: Thymeleaf HTML (or JSON from /api/jobs)
+```
+
+Animated version for the session: open [docs/flow-explorer.html](docs/flow-explorer.html) in any browser (offline, no install). Four flows: startup, read, apply (POST + redirect), N+1.
+
+## Documentation (tasks 1 to 9)
 
 | Task | Where |
 | --- | --- |
@@ -82,12 +104,15 @@ SQL logging and statistics are on. Run with `--demo.n-plus-one=true` and compare
 | 5 Architecture and flow diagrams | [docs/03-architecture-and-flows.md](docs/03-architecture-and-flows.md) |
 | 6 Test cases, key features | [docs/04-test-cases-and-key-features.md](docs/04-test-cases-and-key-features.md) |
 | 7 How to present each piece | [docs/05-session-highlight-guide.md](docs/05-session-highlight-guide.md) |
+| 8 Live session script, step by step | [docs/06-live-session-demo-script.md](docs/06-live-session-demo-script.md) |
+| 9 Slide deck content (PPT ready) | [docs/07-ppt-slide-deck-content.md](docs/07-ppt-slide-deck-content.md) |
+| Animated flow for the session | [docs/flow-explorer.html](docs/flow-explorer.html) |
 
 ## Project layout
 
 ```text
 demos/                       three single-file Java demos (java Demo1Annotations.java)
-docs/                        design, ORM, diagrams, tests, session guide
+docs/                        design, ORM, diagrams, tests, session guide, live script, slide content, flow-explorer.html
 prerequisites/               versions, install and check scripts
 src/main/java/com/ppsu/placement/
   company/ job/ student/ application/   entity, repository, service, controller, forms, views

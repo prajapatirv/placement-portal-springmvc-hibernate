@@ -1,6 +1,7 @@
 # Task 7: How to Highlight Each Code Piece and Feature in the Session
 
 Companion to the PPSU Session 2 demo guide. For every file: **what to open, what to say, what to run, what to point at**.
+Running order with commands: [06-live-session-demo-script.md](06-live-session-demo-script.md); slides: [07-ppt-slide-deck-content.md](07-ppt-slide-deck-content.md); animated flow: [flow-explorer.html](flow-explorer.html).
 Rule: live-code the decisions (annotations, relationship, fetch type, transaction boundary, the query fix); paste the mechanical code (getters, setters, constructors).
 
 ## 1. Order of the walkthrough (matches the Git steps)

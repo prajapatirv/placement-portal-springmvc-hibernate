@@ -2,6 +2,8 @@
 
 Diagrams are Mermaid: they render on GitHub and in IntelliJ / VS Code (Markdown preview with Mermaid support).
 
+Animated walk-through of these flows: [flow-explorer.html](flow-explorer.html). Step by step script: [06-live-session-demo-script.md](06-live-session-demo-script.md).
+
 ## 1. Layered architecture
 
 ```mermaid
@@ -150,3 +152,30 @@ flowchart LR
     Dev2[No account / venue network blocks Supabase] -->|"-Dspring-boot.run.profiles=local"| App2[Same app + in-memory H2]
     CI[GitHub Actions] -->|"./mvnw verify, profile local"| App2
 ```
+
+## 8. Startup flow
+
+```mermaid
+flowchart LR
+    A[start.cmd / mvnw spring-boot:run] --> B[Read config/supabase.properties]
+    B --> C[JDBC connect, schema app]
+    C --> D[Flyway V1 schema, V2 seed, V3 index]
+    D --> E{Hibernate validate:<br/>entities match tables?}
+    E -- no --> X[Startup fails with the mismatch]
+    E -- yes --> F[Repositories + transactional proxies]
+    F --> G[Tomcat on 8080, /actuator/health UP]
+```
+
+## 9. Application status lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> APPLIED: apply
+    APPLIED --> SHORTLISTED: shortlist / bulk shortlist
+    APPLIED --> REJECTED: change status
+    SHORTLISTED --> SELECTED: change status
+    SHORTLISTED --> REJECTED: change status
+    APPLIED --> [*]: withdraw
+```
+
+The change-status form accepts any status (only the stale-version check applies); the arrows show the usual path used in the demo.
