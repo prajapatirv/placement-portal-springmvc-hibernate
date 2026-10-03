@@ -5,6 +5,7 @@ import com.ppsu.placement.common.ConflictException;
 import com.ppsu.placement.common.NotFoundException;
 import com.ppsu.placement.company.Company;
 import com.ppsu.placement.company.CompanyRepository;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,6 +52,17 @@ public class JobService {
     @Transactional(readOnly = true)
     public List<JobSummary> summaries() {
         return jobs.summaries(JobStatus.OPEN);
+    }
+
+    @Transactional(readOnly = true)
+    public List<JobApplicantCount> popular() {                    // example H4
+        return jobs.applicantsPerJob();
+    }
+
+    @Transactional(readOnly = true)
+    public List<JobView> paying(BigDecimal minLpa) {              // example M1
+        return jobs.findByMinPackageLpaGreaterThanEqualOrderByMinPackageLpaDesc(minLpa)
+                .stream().map(this::toView).toList();
     }
 
     @Transactional(readOnly = true)

@@ -3,6 +3,7 @@ package com.ppsu.placement.student;
 import com.ppsu.placement.application.ApplicationRepository;
 import com.ppsu.placement.common.ConflictException;
 import com.ppsu.placement.common.NotFoundException;
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,15 @@ public class StudentService {
     @Transactional(readOnly = true)
     public List<StudentView> list() {
         return students.findAll(Sort.by("name")).stream().map(StudentService::toView).toList();
+    }
+
+    /** Example H2: filter by branch and minimum CGPA, best first, through a derived query. */
+    @Transactional(readOnly = true)
+    public List<StudentView> list(String branch, BigDecimal minCgpa) {
+        if (branch == null || branch.isBlank()) return list();
+        BigDecimal min = minCgpa == null ? BigDecimal.ZERO : minCgpa;
+        return students.findByBranchIgnoreCaseAndCgpaGreaterThanEqualOrderByCgpaDesc(branch.trim(), min)
+                .stream().map(StudentService::toView).toList();
     }
 
     @Transactional(readOnly = true)

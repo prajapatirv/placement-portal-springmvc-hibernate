@@ -12,20 +12,20 @@ flowchart TB
     subgraph Web["Web layer (Spring MVC)"]
         DS[DispatcherServlet<br/>front controller]
         C1[JobController<br/>CompanyController<br/>StudentController<br/>ApplicationController]
-        C2[JobApiController<br/>@RestController, JSON]
+        C2["JobApiController<br/>@RestController, JSON"]
         EH[GlobalExceptionHandler<br/>ApiExceptionHandler]
         V[Thymeleaf templates]
     end
     subgraph Svc["Service layer (@Transactional)"]
         S[JobService / CompanyService<br/>StudentService / ApplicationService]
-        D[DTOs: JobView, ApplicationRow, Forms]
+        D["DTOs: JobView, ApplicationRow, Forms"]
     end
     subgraph Data["Data layer"]
         R[Spring Data JPA repositories]
         H[Hibernate ORM / JPA]
         E[Entities: Company, JobPosting,<br/>Student, Application]
     end
-    F[Flyway migrations V1 V2 V3]
+    F["Flyway migrations V1 V2 V3"]
     DB[(Supabase PostgreSQL<br/>schema app)]
     H2[(H2 in-memory<br/>local profile)]
 
@@ -50,7 +50,7 @@ sequenceDiagram
     participant DS as DispatcherServlet
     participant HM as HandlerMapping
     participant C as JobController
-    participant S as JobService (proxy @Transactional)
+    participant S as JobService (transactional proxy)
     participant R as JobRepository
     participant DB as PostgreSQL
     participant VR as Thymeleaf ViewResolver
@@ -78,19 +78,19 @@ Key sentence: *the browser never talks to your controller; it talks to Dispatche
 flowchart TD
     A[Student opens /jobs/4] --> B[GET /jobs/4/apply shows form]
     B --> C[POST /jobs/4/apply email=...]
-    C --> D{Bean Validation<br/>@NotBlank @Email}
+    C --> D{"Bean Validation<br/>@NotBlank @Email"}
     D -- errors --> E[Redisplay apply.html<br/>with messages, HTTP 200]
-    D -- ok --> F[ApplicationService.apply @Transactional]
+    D -- ok --> F["ApplicationService.apply @Transactional"]
     F --> G{job exists?}
-    G -- no --> N404[NotFoundException -> 404 page]
-    G -- yes --> H{open and not past last date?}
-    H -- no --> N409a[JobClosedException -> 409 page]
+    G -- no --> N404["NotFoundException: 404 page"]
+    G -- yes --> H{"open and not past last date?"}
+    H -- no --> N409a["JobClosedException: 409 page"]
     H -- yes --> I{student exists?}
     I -- no --> N404
-    I -- yes --> J{already applied?<br/>existsByStudentIdAndJobId}
-    J -- yes --> N409b[DuplicateApplicationException -> 409 page]
-    J -- no --> K[save Application<br/>insert ... ; unique uq_application is the last guard]
-    K --> L[flash message + redirect:/applications]
+    I -- yes --> J{"already applied?<br/>existsByStudentIdAndJobId"}
+    J -- yes --> N409b["DuplicateApplicationException: 409 page"]
+    J -- no --> K["save Application (insert)<br/>unique uq_application is the last guard"]
+    K --> L["flash message + redirect to /applications"]
     L --> M[GET /applications shows list<br/>refresh does not re-submit]
 ```
 
@@ -128,7 +128,7 @@ sequenceDiagram
     S->>DB: update ... set status, version=1 where id=? and version=0
     DB-->>A: ok, redirect
     B->>S: POST status=REJECTED, version=0
-    S-->>B: version 0 != 1 -> ObjectOptimisticLockingFailureException
+    S-->>B: version 0 is not 1, ObjectOptimisticLockingFailureException
     Note over B: GlobalExceptionHandler renders the 409 page
 ```
 
@@ -140,7 +140,7 @@ flowchart LR
     T --> a["id 1 -> SHORTLISTED (in memory)"]
     a --> b["id 2 -> SHORTLISTED (in memory)"]
     b --> c["id 9999 -> NotFoundException"]
-    c --> R[ROLLBACK: no UPDATE reaches the database]
+    c --> R["ROLLBACK: no UPDATE reaches the database"]
 ```
 
 ## 7. Environment / deployment view
@@ -157,13 +157,13 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    A[start.cmd / mvnw spring-boot:run] --> B[Read config/supabase.properties]
-    B --> C[JDBC connect, schema app]
+    A["start.cmd / mvnw spring-boot:run"] --> B["Read config/supabase.properties"]
+    B --> C["JDBC connect, schema app"]
     C --> D[Flyway V1 schema, V2 seed, V3 index]
-    D --> E{Hibernate validate:<br/>entities match tables?}
+    D --> E{"Hibernate validate:<br/>entities match tables?"}
     E -- no --> X[Startup fails with the mismatch]
     E -- yes --> F[Repositories + transactional proxies]
-    F --> G[Tomcat on 8080, /actuator/health UP]
+    F --> G["Tomcat on 8080, /actuator/health UP"]
 ```
 
 ## 9. Application status lifecycle

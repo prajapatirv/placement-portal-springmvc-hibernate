@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${e.title})}">
+</head>
+<body class="ex-page">
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <div class="ex-nav">
+    <a class="btn secondary" th:if="${prev != null}" th:href="@{/examples/{id}(id=${prev.id})}" id="ex-prev"
+       th:text="'&larr; ' + ${#strings.toUpperCase(prev.id)}">Prev</a>
+    <a class="btn secondary" th:href="@{/examples}">Index</a>
+    <a class="btn" th:if="${next != null}" th:href="@{/examples/{id}(id=${next.id})}" id="ex-next"
+       th:text="${#strings.toUpperCase(next.id)} + ' &rarr;'">Next</a>
+    <span class="muted" th:text="|${position} of ${total}|">1 of 16</span>
+    <span class="ex-zoom"><button class="secondary" type="button" id="zoom-out">A-</button>
+      <button class="secondary" type="button" id="zoom-in">A+</button></span>
+  </div>
+
+  <h1><span class="ex-id" th:classappend="'lvl' + ${e.level}" th:text="${#strings.toUpperCase(e.id)}">H1</span>
+      <span th:text="${e.title}">Title</span></h1>
+  <p class="muted">
+    <span th:text="|${e.track} · level ${e.level}|">Hibernate</span>
+    <span th:if="${e.optional}"> · optional</span>
+    <span th:if="${!e.slides.isEmpty()}" th:text="| · slides ${e.slides}|"></span>
+  </p>
+
+  <div class="card" th:if="${!e.reallife.isEmpty()}"><b>Real life:</b> <span th:text="${e.reallife}">...</span></div>
+
+  <div class="card ex-predict" th:if="${!e.predict.isEmpty()}">
+    <b>Predict first.</b> <span th:text="${e.predict}">Question</span>
+    <div><button type="button" class="warn" id="reveal-btn">Reveal</button></div>
+    <div class="ex-reveal" id="reveal" hidden><b>Answer:</b> <span th:text="${e.reveal}">Answer</span></div>
+  </div>
+
+  <div th:each="s : ${e.snippets}" class="ex-snippet">
+    <div class="ex-snippet-title" th:text="${s.title}">Title</div>
+    <pre><code th:text="${s.code}">code</code></pre>
+  </div>
+
+  <div class="card" th:if="${!e.runs.isEmpty()}">
+    <h3>Run it</h3>
+    <div th:each="r, st : ${e.runs}" class="ex-run">
+      <button type="button" class="ex-run-btn"
+              th:attr="data-method=${r.method},data-url=${r.url},data-body=${r.body},data-ctype=${r.contentType},data-status=${r.status},data-idx=${st.index}"
+              th:text="'Run: ' + ${r.label}">Run</button>
+      <code class="ex-url" th:text="${r.method} + ' ' + ${r.url}">GET /x</code>
+      <a th:if="${r.method == 'GET' and r.status != 500}" th:href="@{${r.url}}" target="_blank" class="small">open in tab</a>
+      <span class="muted small" th:if="${r.mutates}">changes data</span>
+      <div class="muted small" th:text="${r.expect}">Expect</div>
+      <div class="ex-result" th:id="'result-' + ${st.index}" hidden></div>
+    </div>
+  </div>
+
+  <div class="card" th:if="${!e.breakIt.isEmpty()}"><b>Break it.</b> <span th:text="${e.breakIt}">...</span></div>
+  <div class="card" th:if="${!e.say.isEmpty()}"><b>Say:</b> <span th:text="${e.say}">...</span></div>
+  <div class="card" th:if="${!e.watch.isEmpty()}"><b>Watch:</b> <span th:text="${e.watch}">...</span></div>
+  <p class="muted small" th:if="${!e.files.isEmpty()}"><b>In the repo:</b> <span th:text="${#strings.listJoin(e.files, ' · ')}">files</span></p>
+
+  <div class="card">
+    <h3>Request log <span class="muted small">(the same lines the console prints)</span>
+      <button class="secondary" type="button" id="log-clear" style="float:right">Clear</button></h3>
+    <table class="ex-log">
+      <thead><tr><th>Time</th><th>Request</th><th>Status</th><th>SQL</th><th>ms</th></tr></thead>
+      <tbody id="log-body"><tr><td colspan="5" class="muted">No requests yet. Press Run.</td></tr></tbody>
+    </table>
+  </div>
+</main>
+<script th:src="@{/js/examples.js}"></script>
+</body>
+</html>

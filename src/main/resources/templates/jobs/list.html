@@ -14,7 +14,7 @@
   <table>
     <tr><th>Title</th><th>Company</th><th>City</th><th>Package</th><th>Last date</th></tr>
     <tr th:each="j : ${jobs}">
-      <td><a th:href="@{/jobs/{id}(id=${j.id})}" th:text="${j.title}">Title</a></td>
+      <td><a th:href="@{/jobs/{id}(id=${j.id})}" th:text="${j.title}">Title</a><span class="muted" th:if="${j.closingSoon()}"> (closing soon)</span></td>
       <td th:text="${j.company}">Company</td>
       <td th:text="${j.city}">City</td>
       <td th:text="|${j.minLpa} to ${j.maxLpa} LPA|">Package</td>
