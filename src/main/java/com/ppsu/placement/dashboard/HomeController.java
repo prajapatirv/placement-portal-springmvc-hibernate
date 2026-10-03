@@ -1,4 +1,4 @@
-package com.ppsu.placement.common;
+package com.ppsu.placement.dashboard;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

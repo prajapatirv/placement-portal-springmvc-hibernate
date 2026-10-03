@@ -1,4 +1,4 @@
-package com.ppsu.placement.common;
+package com.ppsu.placement.dashboard;
 
 import com.ppsu.placement.application.ApplicationRepository;
 import com.ppsu.placement.company.CompanyRepository;
