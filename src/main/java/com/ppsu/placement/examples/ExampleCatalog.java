@@ -16,7 +16,7 @@ public class ExampleCatalog {
 
     private final List<Example> all = List.of(
             h1(), h2(), h3(), h4(), h5(), h6(), h7(), h8(),
-            m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8());
+            m1(), m2(), m3(), m4(), m5(), m6(), m7(), m8()).stream().map(ExampleInternals::add).toList();
 
     public List<Example> all() {
         return all;
@@ -342,7 +342,7 @@ public class ExampleCatalog {
                         }""")
                 .predict("Submit an empty email. What comes back?", "The same form with 'Email is required', status 200 (it is a page, not an API).")
                 .post("POST with an empty email (like curl)", "/jobs/1/apply", "email=", FORM, 200,
-                        "200 and the form again. No service call, no SQL.", false)
+                        "200 and the form again. No insert and no service rule ran; one select reloads the job for the page header.", false)
                 .watch("Happy path by hand: apply with yash@ppsu.example on /jobs/1/apply. The request log shows POST -> 302, then GET /applications. Press F5: nothing is submitted twice. Withdraw the application afterwards on /applications.");
     }
 

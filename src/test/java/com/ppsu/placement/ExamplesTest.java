@@ -82,6 +82,13 @@ class ExamplesTest {
         }
     }
 
+    @Test
+    void every_example_explains_how_it_works_inside() {
+        for (Example e : catalog.all()) {
+            assertThat(e.inside).as("inside section of " + e.id).isNotEmpty();
+        }
+    }
+
     // ---- H2, H4: queries ----
 
     @Test

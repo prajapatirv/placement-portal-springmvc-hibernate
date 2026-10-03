@@ -37,6 +37,15 @@
     <pre><code th:text="${s.code}">code</code></pre>
   </div>
 
+  <details class="card ex-inside" th:if="${!e.inside.isEmpty()}">
+    <summary>How it works inside <span class="muted small">(click to open)</span></summary>
+    <div th:each="b : ${e.inside}" class="ex-inside-block">
+      <div class="ex-snippet-title" th:text="${b.heading}">Heading</div>
+      <p th:if="${!b.text.isEmpty()}" th:text="${b.text}">Text</p>
+      <pre th:if="${!b.code.isEmpty()}"><code th:text="${b.code}">code</code></pre>
+    </div>
+  </details>
+
   <div class="card" th:if="${!e.runs.isEmpty()}">
     <h3>Run it</h3>
     <div th:each="r, st : ${e.runs}" class="ex-run">
