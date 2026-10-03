@@ -1,5 +1,6 @@
 package com.ppsu.placement.job;
 
+import java.math.BigDecimal;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,6 +21,16 @@ class JobApiController {
     @GetMapping
     List<JobView> all(@RequestParam(required = false) String city) {
         return jobs.listOpenJobs(city);
+    }
+
+    @GetMapping("/popular")
+    List<JobApplicantCount> popular() {
+        return jobs.popular();
+    }
+
+    @GetMapping("/paying")
+    List<JobView> paying(@RequestParam BigDecimal minLpa) {
+        return jobs.paying(minLpa);
     }
 
     @GetMapping("/{id}")

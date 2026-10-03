@@ -35,6 +35,14 @@ public class ApplicationService {
         return applications.findAllWithDetails().stream().map(this::toRow).toList();
     }
 
+    /** Example H3 (naive, N+1) and H5 (entity graph, 1 statement): the same page, two fetch plans. */
+    @Transactional(readOnly = true)
+    public List<ApplicationRow> mine(String email, boolean slow) {
+        var found = slow ? applications.findByStudentEmailIgnoreCase(email)
+                         : applications.findWithGraphByStudentEmailIgnoreCase(email);
+        return found.stream().map(this::toRow).toList();
+    }
+
     @Transactional(readOnly = true)
     public ApplicationRow get(Long id) {
         return toRow(applications.findWithDetailsById(id)
@@ -67,6 +75,12 @@ public class ApplicationService {
                     .orElseThrow(() -> new NotFoundException("Application " + id));
             a.setStatus(ApplicationStatus.SHORTLISTED);
         }
+    }
+
+    /** Example H8: one UPDATE for all ids. Fast, but the version column is not incremented. */
+    @Transactional
+    public int bulkShortlistFast(List<Long> ids) {
+        return applications.updateStatusIn(ids, ApplicationStatus.SHORTLISTED);
     }
 
     /** Optimistic locking across a browser form that may be minutes old. */

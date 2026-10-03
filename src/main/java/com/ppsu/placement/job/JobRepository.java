@@ -1,5 +1,6 @@
 package com.ppsu.placement.job;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
@@ -36,6 +37,19 @@ public interface JobRepository extends JpaRepository<JobPosting, Long> {
     // L6 projection: two columns in the SQL instead of the whole entity
     @Query("select j.title as title, j.company.name as companyName from JobPosting j where j.status = :status")
     List<JobSummary> summaries(@Param("status") JobStatus status);
+
+    // Example H4: aggregate projection. left join keeps jobs with zero applicants (count 0).
+    @Query("""
+            select j.title as title, count(a) as applicants
+            from JobPosting j left join Application a on a.job = j
+            group by j.title
+            order by count(a) desc, j.title
+            """)
+    List<JobApplicantCount> applicantsPerJob();
+
+    // Example M1: a numeric request parameter, converted by Spring, answered by a derived query
+    @EntityGraph(attributePaths = "company")
+    List<JobPosting> findByMinPackageLpaGreaterThanEqualOrderByMinPackageLpaDesc(BigDecimal minLpa);
 
     long countByCompanyId(Long companyId);
 

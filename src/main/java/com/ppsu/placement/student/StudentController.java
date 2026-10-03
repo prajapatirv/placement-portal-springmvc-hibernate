@@ -2,6 +2,7 @@ package com.ppsu.placement.student;
 
 import com.ppsu.placement.common.ConflictException;
 import jakarta.validation.Valid;
+import java.math.BigDecimal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,8 +19,11 @@ public class StudentController {
     }
 
     @GetMapping
-    public String list(Model model) {
-        model.addAttribute("students", students.list());
+    public String list(@RequestParam(required = false) String branch,
+                       @RequestParam(required = false) BigDecimal minCgpa, Model model) {
+        model.addAttribute("students", students.list(branch, minCgpa));
+        model.addAttribute("branch", branch);
+        model.addAttribute("minCgpa", minCgpa);
         return "students/list";
     }
 

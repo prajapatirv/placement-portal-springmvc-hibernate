@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Session examples')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Session examples: appendix</h1>
+  <p class="muted">Sixteen examples, basic to advanced, all on the Placement Portal you already know.
+    Open one, read the code, press <b>Run</b>, and point at the request log: every click answered by a line in the console.</p>
+
+  <div class="toolbar">
+    <a class="btn" th:href="@{/examples/h1}">Start the tour &rarr;</a>
+    <span class="muted">On any example page, use the &larr; and &rarr; keys to move one by one.</span>
+  </div>
+
+  <div th:each="track : ${tracks}" class="ex-track">
+    <h2 th:text="${track == 'Hibernate' ? 'Part A. Hibernate' : 'Part B. Spring MVC'}">Part A. Hibernate</h2>
+    <table class="ex-index">
+      <tr><th>#</th><th>Example</th><th>Level</th><th>Slides</th><th>Run buttons</th></tr>
+      <tr th:each="e : ${examples}" th:if="${e.track == track}">
+        <td><span class="ex-id" th:classappend="'lvl' + ${e.level}" th:text="${#strings.toUpperCase(e.id)}">H1</span></td>
+        <td>
+          <a th:href="@{/examples/{id}(id=${e.id})}" th:text="${e.title}">Title</a>
+          <span class="muted" th:if="${e.optional}"> (optional)</span>
+          <div class="muted small" th:text="${e.reallife}">Real life</div>
+        </td>
+        <td th:text="${e.level}">1</td>
+        <td th:text="${e.slides}">15</td>
+        <td th:text="${#lists.size(e.runs)}">3</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>Levels</h3>
+    <ul>
+      <li><b>1 Basics:</b> H1 mapping, H2 CRUD, M1 controllers</li>
+      <li><b>2 Intermediate:</b> H3 relationships, H4 queries, M2 model and views, M3 forms and validation</li>
+      <li><b>3 Production:</b> H5 N+1, H6 persistence context, H7 transactions, M4 REST, M5 errors, M6 interceptor</li>
+      <li><b>4 Advanced (optional):</b> H8 bulk operations, M7 layers and DTO, M8 where to go next</li>
+    </ul>
+  </div>
+</main>
+</body>
+</html>

@@ -69,7 +69,7 @@ SQL logging and statistics are on. Run with `--demo.n-plus-one=true` and compare
 
 ## Tests
 
-`./mvnw verify` runs 38 tests on H2 (no secrets, no Supabase). See [docs/04-test-cases-and-key-features.md](docs/04-test-cases-and-key-features.md).
+`./mvnw verify` runs 51 tests on H2 (no secrets, no Supabase). See [docs/04-test-cases-and-key-features.md](docs/04-test-cases-and-key-features.md).
 
 ## How a request flows (one picture)
 
@@ -106,6 +106,7 @@ Animated version for the session: open [docs/flow-explorer.html](docs/flow-explo
 | 7 How to present each piece | [docs/05-session-highlight-guide.md](docs/05-session-highlight-guide.md) |
 | 8 Live session script, step by step | [docs/06-live-session-demo-script.md](docs/06-live-session-demo-script.md) |
 | 9 Slide deck content (PPT ready) | [docs/07-ppt-slide-deck-content.md](docs/07-ppt-slide-deck-content.md) |
+| 10 Runnable session examples (appendix at `/examples`) | [docs/09-session-examples.md](docs/09-session-examples.md) |
 | Animated flow for the session | [docs/flow-explorer.html](docs/flow-explorer.html) |
 
 ## Project layout

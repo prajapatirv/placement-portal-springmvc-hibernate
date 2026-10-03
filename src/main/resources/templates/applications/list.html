@@ -6,7 +6,13 @@
 <main>
   <h1>Applications</h1>
   <div th:replace="~{fragments/layout :: flash}"></div>
-  <div class="toolbar">
+  <div class="toolbar" th:if="${mineEmail != null}">
+    <span>Applications of <b th:text="${mineEmail}">email</b> &middot;
+      <span th:if="${slow}">Mode: <b>NAIVE</b> (no fetch plan) &middot; <a th:href="@{/applications/mine(email=${mineEmail})}">switch to entity graph</a></span>
+      <span th:unless="${slow}">Mode: <b>ENTITY GRAPH</b> (1 SQL statement) &middot; <a th:href="@{/applications/mine(email=${mineEmail},slow=true)}">switch to naive</a></span>
+    </span>
+  </div>
+  <div class="toolbar" th:if="${mineEmail == null}">
     <span th:if="${slow}">Mode: <b>SLOW</b> (lazy loading, 26 SQL statements) &middot; <a th:href="@{/applications}">switch to fast</a></span>
     <span th:unless="${slow}">Mode: <b>FAST</b> (JOIN FETCH, 1 SQL statement) &middot; <a th:href="@{/applications(slow=true)}">switch to slow</a></span>
   </div>

@@ -7,6 +7,12 @@
   <h1>Students</h1>
   <div th:replace="~{fragments/layout :: flash}"></div>
   <div class="toolbar"><a class="btn" th:href="@{/students/new}">+ Add student</a></div>
+  <form class="toolbar" method="get" th:action="@{/students}">
+    <input name="branch" th:value="${branch}" placeholder="Branch, for example CE" size="12">
+    <input name="minCgpa" th:value="${minCgpa}" placeholder="Min CGPA" size="8">
+    <button type="submit">Filter</button>
+    <a class="btn secondary" th:href="@{/students}" th:if="${branch != null and !branch.isBlank()}">Clear</a>
+  </form>
   <table>
     <tr><th>Name</th><th>Email</th><th>Branch</th><th>CGPA</th><th></th></tr>
     <tr th:each="s : ${students}">

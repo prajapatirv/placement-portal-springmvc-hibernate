@@ -26,6 +26,14 @@ public class ApplicationController {
         return "applications/list";
     }
 
+    @GetMapping("/applications/mine")
+    public String mine(@RequestParam String email, @RequestParam(defaultValue = "false") boolean slow, Model model) {
+        model.addAttribute("rows", applications.mine(email, slow));
+        model.addAttribute("slow", slow);
+        model.addAttribute("mineEmail", email);
+        return "applications/list";                            // reuse the existing template
+    }
+
     // ---- apply (Post-Redirect-Get) ----
 
     @GetMapping("/jobs/{id}/apply")
