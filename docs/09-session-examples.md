@@ -15,6 +15,7 @@ Each example has its own page, `/examples/h1` ... `/examples/m8`, with:
 | Code snippets | the exact code, big font, ready to read aloud (A+ / A- buttons zoom for the projector) |
 | Run buttons | call the real endpoint from the page and show the HTTP status |
 | Request log | method, URL, status, **SQL count**, milliseconds: the same lines the console prints (example M6) |
+| How it works inside (click to open) | what Spring and Hibernate do internally, with the exact SQL copied from a real run |
 | Break it / Say / Watch | the talk track |
 
 **Move one example at a time:** the left and right arrow keys, or the Prev / Next buttons. The index (`/examples`) is the appendix page: one row per example, with the slide numbers it belongs to.
@@ -59,7 +60,7 @@ H8 and M6 have no slide in the v3 deck. Add two appendix slides ("Bulk update: o
 | M6 | `QueryCountInterceptor`, `WebConfig`, `RequestLog` |
 | M7 | `/examples/run/m7/raw-entity`: wrong on purpose, returns a 500 |
 
-`ExamplesTest` (13 tests) runs every Run button that does not change data and checks the status code, and asserts the numbers we say aloud (8 statements naive, 1 with the entity graph, 26 vs 1, 6 vs 1, and so on). `./mvnw verify` now runs 51 tests.
+`ExamplesTest` (14 tests) runs every Run button that does not change data and checks the status code, and asserts the numbers we say aloud (8 statements naive, 1 with the entity graph, 26 vs 1, 6 vs 1, and so on). `./mvnw verify` now runs 52 tests.
 
 ## Before the session: things to know
 

@@ -69,7 +69,7 @@ SQL logging and statistics are on. Run with `--demo.n-plus-one=true` and compare
 
 ## Tests
 
-`./mvnw verify` runs 51 tests on H2 (no secrets, no Supabase). See [docs/04-test-cases-and-key-features.md](docs/04-test-cases-and-key-features.md).
+`./mvnw verify` runs 52 tests on H2 (no secrets, no Supabase). See [docs/04-test-cases-and-key-features.md](docs/04-test-cases-and-key-features.md).
 
 ## How a request flows (one picture)
 

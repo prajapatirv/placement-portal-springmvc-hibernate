@@ -63,3 +63,8 @@ form.inline { display:inline; }
 .ex-predict { border-left:4px solid var(--orange); }
 .ex-reveal { margin-top:8px; padding:8px 12px; background:#e3f6ea; border-radius:6px; }
 .ex-log td { padding:6px 10px; }
+.ex-inside { border-left:4px solid var(--teal); }
+.ex-inside summary { cursor:pointer; font-weight:600; color:var(--navy); font-size:1.1em; }
+.ex-inside-block { margin-top:14px; }
+.ex-inside-block p { margin:4px 0 8px; }
+.ex-inside-block pre { background:#0f1722; color:#d6f5dc; padding:12px 14px; border-radius:8px; overflow:auto; margin:0; font:.88em/1.45 Consolas, "Courier New", monospace; }
