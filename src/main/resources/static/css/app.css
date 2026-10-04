@@ -68,3 +68,7 @@ form.inline { display:inline; }
 .ex-inside-block { margin-top:14px; }
 .ex-inside-block p { margin:4px 0 8px; }
 .ex-inside-block pre { background:#0f1722; color:#d6f5dc; padding:12px 14px; border-radius:8px; overflow:auto; margin:0; font:.88em/1.45 Consolas, "Courier New", monospace; }
+
+/* ---- architecture demo (/demo) ---- */
+.demo-main { max-width:none; }
+.demo-frame { display:block; width:100%; height:calc(100vh - 230px); min-height:640px; border:1px solid var(--line); border-radius:8px; background:#fff; }

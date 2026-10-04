@@ -25,3 +25,13 @@ You can also see every artifact in the Claude Code terminal with `/artifacts`, o
 | 8 | Gen AI Pipelines | Gen AI pipeline explainer | https://claude.ai/artifact/TUx3iXai1ceXzyt6g41LRt |
 | 9 | AI Desk & Q&A: Slide Prep | Slide prep for AI Desk and Q&A | https://claude.ai/artifact/Q2oFex9mF7cqH57whTft4Z |
 | 10 | AI Desk Module: Change Document & Impact Assessment | Change record and impact | https://claude.ai/artifact/3cDea6Z58VgsHnbKsF1R8j |
+
+## Architecture walkthrough (the three parts on the /demo page)
+
+| Part | Artifact | Link |
+| --- | --- | --- |
+| 1 | ORM with Hibernate, and where AI connects | https://claude.ai/artifact/TA4zJFNPtaRhSUwnzdDv27 |
+| 2 | Spring MVC and the Placement app | https://claude.ai/artifact/Gh32D4cuCxvw9DJoRdbuFU |
+| 3 | Gen AI: from basics to the whole stack | https://claude.ai/artifact/MCtoGsEd4FTa4FWSN7Uhha |
+
+The same three parts are bundled into one offline page at `/demo` (`src/main/resources/static/demo/walkthrough.html`). The web app lists every artifact in `ArtifactLink.java`; keep it in step with this file.

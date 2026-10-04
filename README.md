@@ -93,6 +93,8 @@ sequenceDiagram
 
 Animated version for the session: open [docs/flow-explorer.html](docs/flow-explorer.html) in any browser (offline, no install). Four flows: startup, read, apply (POST + redirect), N+1.
 
+In the running app, open **Architecture Demo** (`/demo`): the three-part ORM / Spring MVC / Gen AI walkthrough, the flow explorer, and links to every Claude artifact. See [docs/12-interactive-walkthrough.md](docs/12-interactive-walkthrough.md).
+
 ## Documentation (tasks 1 to 9)
 
 | Task | Where |
