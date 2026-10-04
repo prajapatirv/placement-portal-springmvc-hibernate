@@ -18,3 +18,7 @@ supabase.sslmode=require
 
 # Reference only (not used by JDBC): project URL https://YOUR-PROJECT-REF.supabase.co
 # The publishable (anon) key is for Supabase's REST/JS API and is NOT needed for this Spring + JDBC app.
+
+# Placement Assistant, live mode (optional). Same git-ignored file, so the key never reaches Git.
+# Alternative: set the ANTHROPIC_API_KEY environment variable. Then start with --assistant.mode=live
+# assistant.claude.api-key=sk-ant-YOUR-KEY

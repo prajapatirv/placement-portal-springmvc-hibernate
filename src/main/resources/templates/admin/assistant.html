@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Placement Assistant')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main>
+  <h1>Placement Assistant <small id="mode" th:text="${mode}">MOCK</small></h1>
+  <p>Ask a placement question, for example <em>Which students are placed and where?</em></p>
+  <form id="askForm">
+    <input id="question" type="text" maxlength="300" style="width:70%" autocomplete="off"
+           placeholder="Type your question">
+    <button type="submit">Ask</button>
+  </form>
+  <p id="error" style="color:#b00020"></p>
+  <p id="summary"></p>
+  <table id="result" class="table"><thead></thead><tbody></tbody></table>
+  <details id="rulesBox">
+    <summary>Custom keywords (MOCK mode, kept until restart)</summary>
+    <form id="ruleForm">
+      <input id="ruleKeyword" placeholder="keyword, e.g. top recruiters" maxlength="60">
+      <select id="ruleTool">
+        <option>placed_students</option>
+        <option>applications_by_status</option>
+        <option>students_without_applications</option>
+        <option>applications_per_company</option>
+        <option>placement_summary</option>
+      </select>
+      <select id="ruleStatus">
+        <option value="">(no status)</option>
+        <option>APPLIED</option><option>SHORTLISTED</option><option>REJECTED</option><option>SELECTED</option>
+      </select>
+      <button type="submit">Add keyword</button>
+    </form>
+    <p id="ruleError" style="color:#b00020"></p>
+    <ul id="ruleList"></ul>
+  </details>
+  <details id="asked" hidden>
+    <summary>What the AI asked for</summary>
+    <ol id="steps"></ol>
+    <pre id="askedJson"></pre>
+  </details>
+</main>
+<script th:inline="javascript">
+  const askUrl = /*[[@{/admin/assistant/ask}]]*/ '/admin/assistant/ask';
+  const $ = id => document.getElementById(id);
+
+  function cell(tag, text) {
+    const el = document.createElement(tag);
+    el.textContent = text;                       // textContent: never interpreted as HTML
+    return el;
+  }
+
+  const rulesUrl = /*[[@{/admin/assistant/rules}]]*/ '/admin/assistant/rules';
+
+  async function loadRules() {
+    const rules = await (await fetch(rulesUrl)).json();
+    $('ruleList').replaceChildren();
+    rules.forEach(r => {
+      const li = document.createElement('li');
+      li.textContent = r.keyword + ' -> ' + r.tool + (r.status ? ' (' + r.status + ')' : '') + ' ';
+      const b = document.createElement('button');
+      b.textContent = 'remove';
+      b.onclick = async () => {
+        await fetch(rulesUrl + '?keyword=' + encodeURIComponent(r.keyword), {method: 'DELETE'});
+        loadRules();
+      };
+      li.appendChild(b);
+      $('ruleList').appendChild(li);
+    });
+  }
+
+  $('ruleForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const res = await fetch(rulesUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({keyword: $('ruleKeyword').value, tool: $('ruleTool').value, status: $('ruleStatus').value})
+    });
+    const j = await res.json();
+    $('ruleError').textContent = res.ok ? '' : j.error;
+    if (res.ok) { $('ruleKeyword').value = ''; loadRules(); }
+  });
+  loadRules();
+
+  $('askForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    $('error').textContent = '';
+    $('summary').textContent = 'Thinking...';
+    $('asked').hidden = true;
+    $('result').tHead.replaceChildren();
+    $('result').tBodies[0].replaceChildren();
+    try {
+      const res = await fetch(askUrl, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({question: $('question').value})
+      });
+      const a = await res.json();
+      $('summary').textContent = a.summary || '';
+      $('error').textContent = a.error || '';
+      if (a.columns && a.columns.length) {
+        const tr = document.createElement('tr');
+        a.columns.forEach(c => tr.appendChild(cell('th', c)));
+        $('result').tHead.appendChild(tr);
+        a.rows.forEach(r => {
+          const row = document.createElement('tr');
+          r.forEach(c => row.appendChild(cell('td', c)));
+          $('result').tBodies[0].appendChild(row);
+        });
+      }
+      $('steps').replaceChildren();
+      (a.steps || []).forEach(s => { const li = document.createElement('li'); li.textContent = s; $('steps').appendChild(li); });
+      if (a.tool || (a.steps && a.steps.length)) {
+        $('askedJson').textContent = JSON.stringify({tool: a.tool, args: a.args}, null, 2);
+        $('asked').hidden = false;
+      }
+    } catch (err) {
+      $('summary').textContent = '';
+      $('error').textContent = 'Could not reach the server.';
+    }
+  });
+</script>
+</body>
+</html>
