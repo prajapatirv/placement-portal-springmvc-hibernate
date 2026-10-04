@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Architecture Demo')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: nav}"></nav>
+<main class="demo-main">
+  <h1>Architecture Demo</h1>
+  <p class="muted">ORM, Spring MVC and Gen AI, step by step. Use Run / Next, or press Space and the arrow keys.</p>
+
+  <div class="toolbar" role="tablist">
+    <button type="button" role="tab" class="demo-tab" aria-selected="true" data-src="/demo/walkthrough.html">Walkthrough: ORM, Spring MVC, Gen AI</button>
+    <button type="button" role="tab" class="demo-tab secondary" aria-selected="false" data-src="/demo/flow-explorer.html">Flow explorer: startup, read, apply, N+1</button>
+    <a id="demo-full" class="btn secondary" th:href="@{/demo/walkthrough.html}" target="_blank">Open full screen</a>
+  </div>
+
+  <iframe id="demo-frame" class="demo-frame" th:src="@{/demo/walkthrough.html}" title="Architecture walkthrough"></iframe>
+
+  <div class="card">
+    <h2>Claude artifacts <span class="muted small" th:text="'(' + ${#lists.size(artifacts)} + ')'">(15)</span></h2>
+    <p class="muted small">Every artifact built for this session. They open on claude.ai and are private to the owner until shared from the artifact's Share menu.</p>
+    <div th:each="g : ${groups}">
+      <h3 th:text="${g}">Group</h3>
+      <table>
+        <tr th:each="a : ${artifacts}" th:if="${a.group == g}">
+          <td><a th:href="${a.url}" target="_blank" rel="noopener" th:text="${a.title}">Title</a></td>
+          <td class="muted small" th:text="${a.purpose}">Purpose</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</main>
+<script th:src="@{/js/demo.js}"></script>
+</body>
+</html>

@@ -16,6 +16,6 @@ class WebConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(queryCount).excludePathPatterns(
                 "/css/**", "/img/**", "/favicon.ico", "/actuator/**",
-                "/examples", "/examples/*", "/examples/requests/**");   // the guide itself is not a demo request
+                "/examples", "/examples/*", "/examples/requests/**", "/demo", "/demo/**");   // the guide itself is not a demo request
     }
 }
