@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.ParameterizedTypeReference;
@@ -36,15 +37,18 @@ public class ClaudeAiClient implements AiClient {
     private final RestClient http;
     private final String apiKey;
     private final String model;
+    private final String workspaceId;
 
     public ClaudeAiClient(@Value("${assistant.claude.api-key:${ANTHROPIC_API_KEY:}}") String apiKey,
-                          @Value("${assistant.claude.model:claude-haiku-4-5-20251001}") String model) {
+                          @Value("${assistant.claude.model:claude-haiku-4-5-20251001}") String model,
+                          @Value("${assistant.claude.workspace-id:}") String workspaceId) {
         SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
         factory.setConnectTimeout((int) Duration.ofSeconds(5).toMillis());
         factory.setReadTimeout((int) Duration.ofSeconds(20).toMillis());
         this.http = RestClient.builder().requestFactory(factory).build();
         this.apiKey = apiKey;
         this.model = model;
+        this.workspaceId = workspaceId;
     }
 
     @Override
@@ -67,14 +71,18 @@ public class ClaudeAiClient implements AiClient {
 
         Map<String, Object> response;
         try {
-            response = http.post().uri(URL)
+            RestClient.RequestBodySpec req = http.post().uri(URL)
                     .header("x-api-key", apiKey)
                     .header("anthropic-version", "2023-06-01")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(body)
+                    .contentType(MediaType.APPLICATION_JSON);
+            if (workspaceId != null && !workspaceId.isBlank()) {
+                req = req.header("anthropic-workspace-id", workspaceId);   // needed for keys not scoped to a workspace
+            }
+            response = req.body(body)
                     .retrieve()
                     .body(new ParameterizedTypeReference<Map<String, Object>>() {});
         } catch (RestClientException e) {
+            LoggerFactory.getLogger(ClaudeAiClient.class).error("Claude API call failed (model={}): {}", model, e.toString());
             throw new AiUnavailableException("The AI service did not respond. Try again, or switch to mock mode.", e);
         }
         return parse(response);
